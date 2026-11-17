@@ -1,0 +1,107 @@
+BNZ_9_1
+  ATLAS   
+
+  6  6  0  0  0  0  0  0  0  0  1 V2000
+    1.2619   66.7484   76.6888 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.1145   65.8603   77.3860 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.2907   65.3766   76.7671 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.6162   65.7847   75.4531 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.7665   66.6771   74.7577 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.5870   67.1556   75.3736 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  1  6  2  0  0  0  0
+  2  3  2  0  0  0  0
+  3  4  1  0  0  0  0
+  5  4  2  0  0  0  0
+  6  5  1  0  0  0  0
+M  END
+> <ATLAS_PROBE_CLUSTER_BOLTZMANN_ENERGY>
+-7.975233
+
+> <ATLAS_ENERGY>
+-8.046985
+
+> <ATLAS_PROBE_CLUSTER_SIZE>
+66
+
+> <ATLAS_PROBE_CLUSTER_RANK>
+4
+
+> <ATLAS_CONSENSUS_CLUSTER_RANK>
+9
+
+> <ATLAS_CONSENSUS_CLUSTER_SIZE>
+3
+
+$$$$
+BNZ_9_2
+  ATLAS   
+
+  6  6  0  0  0  0  0  0  0  0  1 V2000
+    4.6947   61.9405   77.6672 C   0  0  0  0  0  0  0  0  0  0  0  0
+    4.6645   63.3308   77.9265 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.9604   64.1978   77.0580 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.2853   63.6738   75.9313 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.3147   62.2833   75.6753 C   0  0  0  0  0  0  0  0  0  0  0  0
+    4.0213   61.4164   76.5400 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  1  6  2  0  0  0  0
+  2  3  2  0  0  0  0
+  3  4  1  0  0  0  0
+  5  4  2  0  0  0  0
+  6  5  1  0  0  0  0
+M  END
+> <ATLAS_PROBE_CLUSTER_BOLTZMANN_ENERGY>
+-7.830506
+
+> <ATLAS_ENERGY>
+-7.830508
+
+> <ATLAS_PROBE_CLUSTER_SIZE>
+12
+
+> <ATLAS_PROBE_CLUSTER_RANK>
+5
+
+> <ATLAS_CONSENSUS_CLUSTER_RANK>
+9
+
+> <ATLAS_CONSENSUS_CLUSTER_SIZE>
+3
+
+$$$$
+TBU_9_3
+  ATLAS   
+
+  6  5  0  0  0  0  0  0  0  0  1 V2000
+    3.4468   63.6651   76.1597 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.9572   63.4595   76.4743 C   0  0  0  0  0  0  0  0  0  0  0  0
+    4.3002   63.1327   77.3246 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.7423   65.1536   75.8997 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.7628   62.9398   74.9982 O   0  0  0  0  0  0  0  0  0  0  0  0
+    4.6150   63.2627   74.7314 H   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  1  3  1  0  0  0  0
+  1  4  1  0  0  0  0
+  1  5  1  0  0  0  0
+  5  6  1  0  0  0  0
+M  END
+> <ATLAS_PROBE_CLUSTER_BOLTZMANN_ENERGY>
+-16.610795
+
+> <ATLAS_ENERGY>
+-16.905530
+
+> <ATLAS_PROBE_CLUSTER_SIZE>
+135
+
+> <ATLAS_PROBE_CLUSTER_RANK>
+0
+
+> <ATLAS_CONSENSUS_CLUSTER_RANK>
+9
+
+> <ATLAS_CONSENSUS_CLUSTER_SIZE>
+3
+
+$$$$

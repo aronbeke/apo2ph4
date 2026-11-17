@@ -5,3 +5,15 @@ tempdock
 pharmacophores
 complex_list.list
 feature_count.txt
+
+# output of apo2ph4_ftmap.py (default --out-dir); everything in it is regenerable
+ftmap_ph4/
+
+# further AutoGrid products (the grids themselves are covered by *.map above)
+*.glg
+*.gpf
+*.maps.fld
+*.maps.xyz
+
+__pycache__/
+*.pyc
