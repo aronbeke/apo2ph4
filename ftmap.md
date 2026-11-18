@@ -338,6 +338,60 @@ Two things to note when reading such a model:
   hydroxyl- or amine-like group. If that is what you want to find, keep both; if
   a pure acceptor would do, mark the donor optional or drop it.
 
+### 3.2 All 12 consensus clusters, and what each site costs
+
+`python3 apo2ph4_ftmap.py atlas_output/1h24 --clusters all --formats pml,cdf`
+
+The 12 consensus clusters collapse into **8 sites** under the default 8 Å
+centroid merge (CS1+CS2+CS4 become one site, CS7+CS10+CS11 another). Three
+sites yield a model; five do not — see below.
+
+| Site | Clusters | Probes | Probe features | Model | Wall time |
+|---|---|---|---|---|---|
+| `site_00_cs000` | CS0 | 22 | 47 (43 kept) | **7** — H, AR, HBA, HBD, HBD, HBA, H | 31.1 s |
+| `site_01_cs001-002-004` | CS1, CS2, CS4 | 35 | 67 (62 kept) | **9** — H, HBA, HBA, H, H, HBD, HBA, HBA, HBD | 34.8 s |
+| `site_02_cs003` | CS3 | 11 | 21 (18 kept) | **4** — AR, H, HBA, HBD | 29.0 s |
+| `site_03_cs005` | CS5 | 9 | 16 | *failed* | 30.3 s |
+| `site_04_cs006` | CS6 | 4 | 9 | *failed* | 28.2 s |
+| `site_05_cs007-010-011` | CS7, CS10, CS11 | 7 | 11 (10 kept) | *failed* | 28.8 s |
+| `site_06_cs008` | CS8 | 3 | 11 | *failed* | 27.9 s |
+| `site_07_cs009` | CS9 | 3 | 6 | *failed* | 27.9 s |
+
+Total 238 s for all 8 sites on 6 cores.
+
+**Per-site cost is essentially constant at ~28–35 s, and it is almost entirely
+AutoGrid.** Breaking a site down (`site_00`, the largest):
+
+| Step | Time | Scales with |
+|---|---|---|
+| receptor prep + AutoGrid (5 maps, 100³ points) | 25.1 s | receptor size and `--npts`³ — *not* the number of probes |
+| `count_features.py` | 0.3 s | probes |
+| probe pharmacophore generation (`ligand` mode) | 4.0 s | probes (0.18 s each) |
+| `apo2ph4_generate_ph4.py` | 1.7 s | probe features |
+
+So the number of probes barely matters: `site_06` with 3 probes took 27.9 s and
+`site_01` with 35 took 34.8 s. If you need the run faster, the lever is
+`--npts`/`--spacing` (grid cost goes as the cube), not the hotspot selection.
+Dropping to `--npts 60` cuts the grid step roughly 5-fold. Conversely,
+`--skip-grids` on a re-run with changed pharmacophore settings reduces a site to
+about 6 s.
+
+Disk is the other constant: 40 MB of maps per site, 310 MB for all eight.
+
+**Why five sites produce nothing.** All five fail the same way — an
+`IndexError` at `apo2ph4_generate_ph4.py:619`, which averages the top four
+features' scores without checking that four exist. Fewer than four features
+survive scoring and selection, so the run dies. Note this is *not* simply a
+matter of too few probe features going in: `site_03` fed in 16 features (H 5,
+Ar 2, HBD 3, HBA 6) and still ended under four, because the origin-DBSCAN in
+`process_vector_features` needs three coincident features to form a cluster, and
+with 9 probes the same interaction is rarely sampled three times.
+
+The driver catches this per site, reports it and carries on with the remaining
+sites, rather than aborting the whole run. The practical consequence is a floor
+on usable hotspots: **roughly 10 probes per site**, matching the rule that the
+top few consensus clusters are the ones worth modelling anyway.
+
 ---
 
 ## 4. Expected differences from a docked-fragment run
@@ -588,6 +642,13 @@ kind of conversion.
   same centre and box as the current run. Delete the site directory when
   changing `--npts`, `--spacing` or `--grid-center`.
 * **Automatic feature count is unreliable** with few probes. Use `-n`.
+* **Sites with fewer than four surviving features crash step 4.**
+  `apo2ph4_generate_ph4.py:619` sums `pharmacophore_list[0..3]` unconditionally.
+  This is upstream behaviour, left untouched; the driver catches the failure,
+  reports the site as skipped and continues. On the 1H24 example this costs
+  five of eight sites (§3.2). A one-line upstream guard — dividing by
+  `min(4, len(pharmacophore_list))` — would let these emit 1–3 feature models,
+  though a three-feature pharmacophore is weak for screening anyway.
 
 ---
 

@@ -43,6 +43,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 
 SCRIPT_DIR = path.dirname(path.abspath(__file__))
 SCRIPTS_DIR = path.join(SCRIPT_DIR, 'scripts')
@@ -615,9 +616,14 @@ def parse_ph4_report(output):
     return features
 
 
+def make_site_name(site_index, group):
+    """Directory/model name of a site, e.g. site_01_cs001-002-004."""
+    return 'site_%02d_cs%s' % (site_index,
+                               '-'.join('%03d' % c.rank for c in group))
+
+
 def process_site(site_index, group, out_dir, receptor_pdb, args, runner):
-    ranks = [c.rank for c in group]
-    site_name = 'site_%02d_cs%s' % (site_index, '-'.join('%03d' % r for r in ranks))
+    site_name = make_site_name(site_index, group)
     site_dir = path.join(out_dir, site_name)
     os.makedirs(site_dir, exist_ok=True)
 
@@ -840,13 +846,38 @@ def main():
 
     os.makedirs(args.out_dir, exist_ok=True)
     summaries = []
+    failures = []
 
     for i, group in enumerate(groups):
-        summary = process_site(i, group, args.out_dir, path.abspath(receptor_pdb), args,
-                               Runner(args.dry_run, args.verbose))
+        started = time.time()
+
+        # A site that yields too few features makes apo2ph4_generate_ph4.py raise
+        # (it indexes the top four unconditionally).  That is a property of the
+        # hotspot, not a fatal error for the run, so keep going with the others.
+        try:
+            summary = process_site(i, group, args.out_dir, path.abspath(receptor_pdb), args,
+                                   Runner(args.dry_run, args.verbose))
+        except SystemExit as exc:
+            summary = None
+            failures.append((make_site_name(i, group), str(exc)))
+            print('  ! site skipped: %s' % exc, file=sys.stderr)
+        except Exception as exc:                                   # noqa: BLE001
+            summary = None
+            failures.append((make_site_name(i, group), repr(exc)))
+            print('  ! site skipped: %r' % exc, file=sys.stderr)
+
+        elapsed = time.time() - started
+        print('  elapsed            : %.1f s' % elapsed)
 
         if summary:
+            summary['elapsed_seconds'] = round(elapsed, 1)
             summaries.append(summary)
+
+    if failures:
+        print('\n- %d site(s) produced no model:' % len(failures))
+
+        for name, reason in failures:
+            print('   %-28s %s' % (name, reason.splitlines()[0] if reason else ''))
 
     if summaries:
         index_path = path.join(args.out_dir, 'sites.json')
